@@ -1,4 +1,4 @@
-package cscorner;
+package com.uniqedeveloper.registration;
 
 import java.io.IOException;
 import java.sql.Connection;
