@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta http-equiv="X-UA-Compatible" content="ie=edge">
-<title>Sign Up Form by Destiny</title>
+<title>Sign Up</title>
 
 <!-- Font Icon -->
 <link rel="stylesheet"
@@ -15,6 +15,8 @@
 </head>
 <body>
 
+<input type="hidden" id="status" value="<%= request.getAttribute("status")%>">
+
 	<div class="main">
 
 		<!-- Sign up form -->
@@ -24,7 +26,7 @@
 					<div class="signup-form">
 						<h2 class="form-title">Sign up</h2>
 					
-						<form method="post" action="register" class="register-form"
+						<form method="Post" action="register" class="register-form"
 							id="register-form">
 							<div class="form-group">
 								<label for="name"><i
@@ -44,11 +46,9 @@
 								<input type="password" name="re_pass" id="re_pass"
 									placeholder="Repeat your password" />
 							</div>
-							<div class="form-group">
-								<label for="contact"><i class="zmdi zmdi-lock-outline"></i></label>
-								<input type="text" name="contact" id="contact"
-									placeholder="Contact no" />
-							</div>
+							
+    
+							
 							<div class="form-group">
 								<input type="checkbox" name="agree-term" id="agree-term"
 									class="agree-term" /> <label for="agree-term"
@@ -78,9 +78,26 @@
 	<!-- JS -->
 	<script src="vendor/jquery/jquery.min.js"></script>
 	<script src="js/main.js"></script>
+	<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+	
+	<link rel="stylesheet" href="alert/dist/sweetalert.css">
+	<a href="http://localhost:8082/QuizLogin/login.jsp">Sign in</a> <!-- 跳转到登录页面 -->
+
+<script type="text/javascript">
+document.addEventListener("DOMContentLoaded", () => {
+const status = document.getElementById("status").value;
+if(status == "success"){
+	swal("Congrats","Account Created Successfully","success")
+	.then(() => {
+        // Redirect to login page after user clicks "OK"
+        window.location.href = "login.jsp";
+    });
+    }
+</script>
+
+
 
 
 
 </body>
-<!-- This templates was made by Colorlib (https://colorlib.com) -->
 </html>
