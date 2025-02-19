@@ -24,7 +24,7 @@ public class LoginServlet extends HttpServlet {
 		String upwd = request.getParameter("password");
 		HttpSession session = request.getSession();
 		RequestDispatcher dispatcher = null;
-
+//
 		try {
 			Class.forName("com.mysql.cj.jdbc.Driver"); // 使用更新的驱动类
 			try (Connection con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Falcons?useSSL=false",

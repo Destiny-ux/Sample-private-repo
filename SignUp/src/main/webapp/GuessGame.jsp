@@ -14,7 +14,7 @@
             font-family: Arial, sans-serif;
             background-color: #f4f4f4;
         }
-
+//
         .game-container {
             text-align: center;
             background: #fff;

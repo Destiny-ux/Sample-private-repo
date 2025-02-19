@@ -92,7 +92,7 @@
 
       .hero {
         background-image: url("images/falcon.jpg");
-        background-size: 80%; /* 使图片覆盖整个区域 */
+        background-size: 80%; /* 使图片覆盖整个区域 *//
         background-position: center; /* 背景图片居中显示 */
         height: 10vh; /* 设置 section 高度为视口高度 */
         display: flex; /* 使用 flexbox 布局 */

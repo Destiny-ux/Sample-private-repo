@@ -16,7 +16,7 @@ public class GuessGameServlet extends HttpServlet {
         {"https://upload.wikimedia.org/wikipedia/commons/thumb/4/41/Flag_of_India.svg/1200px-Flag_of_India.svg.png", "India", "USA", "Russia", "China"},
         {"https://upload.wikimedia.org/wikipedia/commons/0/03/Flag_of_Italy.svg", "Italy", "France", "Germany", "Japan"}
     };
-
+//
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String selectedOption = request.getParameter("selectedOption");

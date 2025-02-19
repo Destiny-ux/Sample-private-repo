@@ -27,7 +27,7 @@ public class RegistrationServlet extends HttpServlet {
 		String uname = request.getParameter("name");
 		String uemail = request.getParameter("email");
 		String upwd = request.getParameter("pass");
-		
+		//
 
 		Connection con = null;
 		

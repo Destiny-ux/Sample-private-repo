@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="css/style.css" />
 </head>
 <body>
-
+//
 <input type="hidden" id="status" value="<%= request.getAttribute("status") %>">
 
 <div class="main">
