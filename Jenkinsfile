@@ -25,13 +25,14 @@ pipeline {
                 // Add deployment steps here (e.g., copying files to a server)
             }
         }
-        post {
+       
+}
+     post {
     success {
         echo 'Pipeline succeeded!'
     }
     failure {
         echo 'Pipeline failed!'
     }
-}
     }
 }
