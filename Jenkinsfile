@@ -1,5 +1,5 @@
 pipeline {
-    agent any
+    agent {label 'windows'}
 
     tools {
         maven 'Maven-21' // Ensure Maven is installed and configured in Jenkins
@@ -10,13 +10,13 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                sh 'mvn clean package' // Run Maven build
+                bat 'mvn clean package' // Run Maven build
             }
         }
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                sh 'mvn test' // Run Maven tests
+                bat 'mvn test' // Run Maven tests
             }
         }
         stage('Deploy') {
