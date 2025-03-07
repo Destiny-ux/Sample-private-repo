@@ -1,5 +1,8 @@
 pipeline {
     agent {label 'windows'}
+    triggers{
+        pollSCM("")
+    }
 
     tools {
         maven 'Maven-21' // Ensure Maven is installed and configured in Jenkins
