@@ -3,7 +3,7 @@ pipeline {
     
 
     tools {
-        maven 'Maven-3.99' // Ensure Maven is installed and configured in Jenkins
+        maven 'maven-3.99' // Ensure Maven is installed and configured in Jenkins
         jdk 'Java-21'       // Ensure JDK is installed and configured in Jenkins
     }
 
