@@ -55,6 +55,17 @@
       <plugin>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-maven-plugin</artifactId>
+        <version>2.7.0</version>
+            <configuration>
+                <mainClass>com.example.Application</mainClass> <!-- Specify main class -->
+            </configuration>
+            <executions>
+                <execution>
+                    <goals>
+                        <goal>repackage</goal>
+                    </goals>
+                </execution>
+            </executions>
       </plugin>
     </plugins>
   </build>
