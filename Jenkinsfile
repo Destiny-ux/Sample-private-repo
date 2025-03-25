@@ -11,7 +11,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                bat 'mvn -f C:\ProgramData\Jenkins\.jenkins\workspace\Jenkins Pipeline Test\MyMavenApp clean package' // Run Maven build
+                bat 'mvn -f C:\ProgramData\Jenkins\.jenkins\workspace\Jenkins Pipeline Test\MyMavenApp\pom.xml clean package' // Run Maven build
             }
         }
         stage('Test') {
