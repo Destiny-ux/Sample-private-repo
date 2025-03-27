@@ -1,55 +1,119 @@
-package com.example;
+package com.uniquedeveloper.registration;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
+
+import javax.servlet.RequestDispatcher;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+
+import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Unit tests for the application
- */
-@DisplayName("Application Tests")
-public class AppTest {
+class RegistrationServletTest {
+
+    private RegistrationServlet servlet;
+
+    @Mock
+    private HttpServletRequest request;
+    
+    @Mock
+    private HttpServletResponse response;
+    
+    @Mock
+    private RequestDispatcher requestDispatcher;
+    
+    @Mock
+    private Connection connection;
+    
+    @Mock
+    private PreparedStatement preparedStatement;
 
     @BeforeEach
-    public void setUp() {
-        // Setup code that runs before each test
+    void setUp() throws Exception {
+        MockitoAnnotations.openMocks(this);
+        servlet = new RegistrationServlet();
+        
+        // Mock DriverManager behavior
+        when(DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
+            "root", 
+            "RootRoot##"))
+            .thenReturn(connection);
+        
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeUpdate()).thenReturn(1); // Simulate successful insert
     }
 
     @Test
-    @DisplayName("Basic Truth Test")
-    public void testBasicAssertion() {
-        assertTrue(true, "Basic truth assertion should pass");
+    void testDoGet() throws Exception {
+        when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
+        
+        servlet.doGet(request, response);
+        
+        verify(requestDispatcher).forward(request, response);
     }
 
     @Test
-    @DisplayName("Simple Math Test")
-    public void testSimpleMath() {
-        int result = 2 + 2;
-        assertEquals(4, result, "2 + 2 should equal 4");
+    void testDoPostSuccessfulRegistration() throws Exception {
+        // Setup mock request parameters
+        when(request.getParameter("name")).thenReturn("testuser");
+        when(request.getParameter("email")).thenReturn("test@example.com");
+        when(request.getParameter("pass")).thenReturn("password123");
+        
+        // Mock response sendRedirect
+        doNothing().when(response).sendRedirect("login.jsp");
+        
+        servlet.doPost(request, response);
+        
+        // Verify database operations
+        verify(preparedStatement).setString(1, "testuser");
+        verify(preparedStatement).setString(2, "password123");
+        verify(preparedStatement).setString(3, "test@example.com");
+        verify(preparedStatement).executeUpdate();
+        
+        // Verify redirect to login page
+        verify(response).sendRedirect("login.jsp");
     }
 
     @Test
-    @DisplayName("String Comparison Test")
-    public void testStringComparison() {
-        String hello = "Hello";
-        String world = "World";
-        assertNotEquals(hello, world, "Strings should not be equal");
+    void testDoPostFailedRegistration() throws Exception {
+        // Setup mock request parameters
+        when(request.getParameter("name")).thenReturn("testuser");
+        when(request.getParameter("email")).thenReturn("test@example.com");
+        when(request.getParameter("pass")).thenReturn("password123");
+        
+        // Simulate failed database operation
+        when(preparedStatement.executeUpdate()).thenReturn(0);
+        when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
+        
+        servlet.doPost(request, response);
+        
+        // Verify failed status was set
+        verify(request).setAttribute("status", "failed");
+        verify(requestDispatcher).forward(request, response);
     }
 
     @Test
-    @DisplayName("Exception Test")
-    public void testExceptionThrowing() {
-        assertThrows(ArithmeticException.class, () -> {
-            int result = 1 / 0;
-        }, "Should throw ArithmeticException");
-    }
-
-    @Test
-    @DisplayName("Array Test")
-    public void testArrayEquality() {
-        int[] expected = {1, 2, 3};
-        int[] actual = {1, 2, 3};
-        assertArrayEquals(expected, actual, "Arrays should be equal");
+    void testDoPostDatabaseError() throws Exception {
+        // Setup mock request parameters
+        when(request.getParameter("name")).thenReturn("testuser");
+        when(request.getParameter("email")).thenReturn("test@example.com");
+        when(request.getParameter("pass")).thenReturn("password123");
+        
+        // Simulate database error
+        when(connection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
+        when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
+        
+        servlet.doPost(request, response);
+        
+        // Verify error handling
+        verify(requestDispatcher).forward(request, response);
     }
 }
