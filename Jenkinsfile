@@ -49,7 +49,11 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    sh 'mvn sonar:sonar'
+                     sh '''
+            mvn sonar:sonar \
+                -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml \
+                -Dsonar.coverage.jacoco.executionData=target/jacoco.exec
+            '''
                 }
             }
         }
