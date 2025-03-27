@@ -39,10 +39,12 @@ pipeline {
                 ]
             }
         }
+        stage('Trigger'){
         triggers {
         pollSCM('H 10 * * *')  // time is adjustable
         githubPush()
     }
+        }
     
 
         stage('Deploy') {
