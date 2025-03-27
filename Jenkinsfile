@@ -1,34 +1,38 @@
 pipeline {
     agent any
     
+    // Triggers should be at the pipeline level, not inside a stage
+    triggers {
+        pollSCM('H 10 * * *')  // Poll SCM every day at 10 AM
+        // githubPush()  // Note: githubPush() is not a valid trigger (use 'githubPush' instead if using GitHub plugin)
+    }
 
     tools {
-        maven 'maven-3.99' // Ensure Maven is installed and configured in Jenkins
-        jdk 'Java-21'       // Ensure JDK is installed and configured in Jenkins
+        maven 'maven-3.99' 
+        jdk 'Java-21'      
     }
 
     stages {
         stage('Build') {
             steps {
                 echo 'Building the application...'
-                bat 'mvn clean package' // Run Maven build
+                bat 'mvn clean package' 
             }
         }
         stage('Test') {
             steps {
                 echo 'Running tests...'
-                bat 'mvn test' // Run Maven tests
+                bat 'mvn test' 
             }
         }
-         stage('SonarQube Analysis') {
+        stage('SonarQube Analysis') {
             steps {
-                // matching Jenkins config SonarQube server name
                 withSonarQubeEnv('sonarqube-local') {
                     sh 'mvn sonar:sonar'
                 }
             }
         }
-         stage('Report') {
+        stage('Report') {
             steps {
                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
                 publishHTML target: [
@@ -39,29 +43,20 @@ pipeline {
                 ]
             }
         }
-        stage('Trigger'){
-            steps{
-        triggers {
-        pollSCM('H 10 * * *')  // time is adjustable
-        githubPush()
-    }
-        }
-    
-
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
-                // Add deployment steps here (e.g., copying files to a server)
+                // Add deployment steps here
             }
         }
-       
-}
-     post {
-    success {
-        echo 'Pipeline succeeded!'
     }
-    failure {
-        echo 'Pipeline failed!'
-    }
+    
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
+        }
     }
 }
