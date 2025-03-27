@@ -20,6 +20,31 @@ pipeline {
                 bat 'mvn test' // Run Maven tests
             }
         }
+         stage('SonarQube Analysis') {
+            steps {
+                // matching Jenkins config SonarQube server name
+                withSonarQubeEnv('sonarqube-local') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
+         stage('Report') {
+            steps {
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+                publishHTML target: [
+                    allowMissing: false,
+                    reportDir: 'target/site/jacoco',
+                    reportFiles: 'index.html',
+                    reportName: 'JaCoCo Report'
+                ]
+            }
+        }
+        triggers {
+        pollSCM('H 10 * * *')  // time is adjustable
+        githubPush()
+    }
+    
+
         stage('Deploy') {
             steps {
                 echo 'Deploying the application...'
