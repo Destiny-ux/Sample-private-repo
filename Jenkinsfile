@@ -41,8 +41,8 @@ pipeline {
             }
             post {
                 always {
-                    // Always archive test results, even if tests fail
-                    archiveArtifacts artifacts: '**/target/surefire-reports/**/*.*, **/target/site/jacoco/**/*.*', allowEmptyArchive: true
+                    junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
+                    jacoco execPattern: '**/target/jacoco.exec'
                 }
             }
         }
@@ -73,8 +73,8 @@ pipeline {
                             keepAll: true,
                             reportDir: 'target/site/jacoco',
                             reportFiles: 'index.html',
-                            reportName: 'JaCoCo Code Coverage',
-                            reportTitles: ''
+                            reportName: 'JaCoCo Report'
+                            
                         ]
                     } else {
                         echo 'No JaCoCo coverage report found. Skipping HTML publishing.'
@@ -104,9 +104,6 @@ pipeline {
             echo 'Pipeline failed!'
             // Optional: Add failure notifications
         }
-        unstable {
-            echo 'Pipeline completed with unstable status (test failures)'
-            // Optional: Add unstable notifications
-        }
+        
     }
 }
