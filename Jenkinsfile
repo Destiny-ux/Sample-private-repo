@@ -24,10 +24,11 @@ pipeline {
                 script {
                     try {
                         // Run tests with JaCoCo agent
-                        bat 'mvn test jacoco:report'
-                        
-                        // Archive test results
-                        junit '**/target/surefire-reports/**/*.xml'
+                        bat '''
+            mvn clean org.jacoco:jacoco-maven-plugin:0.8.8:prepare-agent test
+            mvn org.jacoco:jacoco-maven-plugin:0.8.8:report
+        '''
+        junit 'target/surefire-reports/*.xml'
                         
                         // Check if coverage reports exist
                         def coverageExists = fileExists 'target/site/jacoco/index.html'
