@@ -63,7 +63,7 @@ pipeline {
             steps {
                 script {
                     // Archive the built artifact
-                    archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+                    archiveArtifacts artifacts: 'target/*.war, target/site/jacoco/**/*', allowEmptyArchive: true
                     
                     // Publish HTML report only if it exists
                     if (fileExists('target/site/jacoco/index.html')) {
