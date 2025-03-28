@@ -1,0 +1,170 @@
+/* General Styles */
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Poppins', sans-serif;
+    background: linear-gradient(135deg, #6a11cb, #2575fc);
+    color: #333;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}
+
+.main {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+/* Signup Section1 */
+.signup {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.1);
+    overflow: hidden;
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.signup-content {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+}
+
+.signup-form {
+    flex: 1;
+    padding: 50px;
+}
+
+.signup-image {
+    flex: 1;
+    background: #f8f9fa;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    padding: 50px;
+}
+
+.signup-image img {
+    max-width: 100%;
+    height: auto;
+}
+
+.signup-image-link {
+    margin-top: 20px;
+    color: #333;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.signup-image-link:hover {
+    color: #6a11cb;
+}
+
+/* Form Styles */
+.form-title {
+    font-size: 24px;
+    font-weight: 700;
+    margin-bottom: 30px;
+    color: #333;
+}
+
+.register-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+    position: relative;
+}
+
+.form-group label {
+    position: absolute;
+    top: 50%;
+    left: 10px;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 18px;
+    transition: all 0.3s ease;
+}
+
+.form-group input {
+    width: 100%;
+    padding: 10px 10px 10px 40px;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    font-size: 16px;
+    outline: none;
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    border-color: #6a11cb;
+}
+
+.form-group input:focus + label,
+.form-group input:not(:placeholder-shown) + label {
+    top: 0;
+    font-size: 12px;
+    color: #6a11cb;
+}
+
+.agree-term {
+    margin-right: 10px;
+}
+
+.label-agree-term {
+    font-size: 14px;
+    color: #666;
+}
+
+.label-agree-term a {
+    color: #6a11cb;
+    text-decoration: none;
+}
+
+.label-agree-term a:hover {
+    text-decoration: underline;
+}
+
+.form-button {
+    margin-top: 30px;
+}
+
+.form-submit {
+    width: 100%;
+    padding: 15px;
+    background: #6a11cb;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.form-submit:hover {
+    background: #2575fc;
+}
+
+/* Responsive Styles */
+@media (max-width: 768px) {
+    .signup-content {
+        flex-direction: column;
+    }
+
+    .signup-form,
+    .signup-image {
+        flex: 1 1 100%;
+        padding: 30px;
+    }
+
+    .signup-image {
+        order: -1;
+    }
+}
