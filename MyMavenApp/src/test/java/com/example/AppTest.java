@@ -16,7 +16,7 @@ import java.sql.PreparedStatement;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
-
+@ExtendWith(MockitoExtension.class)
 class RegistrationServletTest {
 
     private RegistrationServlet servlet;
