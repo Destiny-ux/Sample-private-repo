@@ -11,7 +11,7 @@ pipeline {
             steps {
                 git branch: 'master', 
                 url: 'https://github.com/Destiny-ux/Sample-private-repo.git',
-                credentialsId: 'your-credentials-id' // Add if private repo needs auth
+               
             }
         }
 
