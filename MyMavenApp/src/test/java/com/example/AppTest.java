@@ -18,6 +18,7 @@ import java.sql.PreparedStatement;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
+
 @ExtendWith(MockitoExtension.class)
 class RegistrationServletTest {
 
@@ -51,7 +52,7 @@ class RegistrationServletTest {
             .thenReturn(connection);
         
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-        when(preparedStatement.executeUpdate()).thenReturn(1); // Simulate successful insert
+        when(preparedStatement.executeUpdate()).thenReturn(1);
     }
 
     @Test
@@ -65,54 +66,46 @@ class RegistrationServletTest {
 
     @Test
     void testDoPostSuccessfulRegistration() throws Exception {
-        // Setup mock request parameters
         when(request.getParameter("name")).thenReturn("testuser");
         when(request.getParameter("email")).thenReturn("test@example.com");
         when(request.getParameter("pass")).thenReturn("password123");
         
-        // Mock response sendRedirect
         doNothing().when(response).sendRedirect("login.jsp");
         
         servlet.doPost(request, response);
         
-        // Verify database operations
         verify(preparedStatement).setString(1, "testuser");
         verify(preparedStatement).setString(2, "password123");
         verify(preparedStatement).setString(3, "test@example.com");
         verify(preparedStatement).executeUpdate();
-        
-        // Verify redirect to login page
         verify(response).sendRedirect("login.jsp");
     }
 
     @Test
     void testDoPostFailedRegistration() throws Exception {
-        // Setup mock request parameters
         when(request.getParameter("name")).thenReturn("testuser");
         when(request.getParameter("email")).thenReturn("test@example.com");
         when(request.getParameter("pass")).thenReturn("password123");
         
-        // Simulate failed database operation
         when(preparedStatement.executeUpdate()).thenReturn(0);
         when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
         
         servlet.doPost(request, response);
         
-        // Verify failed status was set
         verify(request).setAttribute("status", "failed");
         verify(requestDispatcher).forward(request, response);
     }
 
     @Test
-public void testDatabaseConnection()throws SQLException {
-    try (Connection conn = DriverManager.getConnection(
-        "jdbc:mysql://localhost:3306/your-Falcons?useSSL=false&allowPublicKeyRetrieval=true",
-        "root",
-        "RootRoot##"
-    )) {
-        assertTrue(conn.isValid(1));
-    }catch (SQLException e) {
-        fail("Database connection failed: " + e.getMessage());
+    void testDatabaseConnection() {  // Removed "throws SQLException"
+        try (Connection conn = DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true",
+            "root",
+            "RootRoot##"
+        )) {
+            assertTrue(conn.isValid(1));
+        } catch (SQLException e) {
+            fail("Database connection failed: " + e.getMessage());
+        }
     }
-}
 }
