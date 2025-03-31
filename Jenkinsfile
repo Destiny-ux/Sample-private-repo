@@ -1,6 +1,11 @@
 pipeline {
     agent any
     
+    triggers {
+        pollSCM('H 10 * * *')  // Checks SCM for changes every day at 10AM
+        // githubPush()  // Remove or properly configure webhooks for this
+    }
+    
     stages {
         stage('Build') {
             steps {
@@ -24,15 +29,15 @@ pipeline {
                 }
             }
         }
-    }
-    stage('SonarQube Analysis') {
+        
+        stage('SonarQube Analysis') {
             steps {
-                // matching Jenkins config SonarQube server name
                 withSonarQubeEnv('sonarqube-local') {
-                    sh 'mvn sonar:sonar'
+                    bat 'mvn sonar:sonar'
                 }
             }
         }
+    }
     
     post {
         always {
@@ -48,14 +53,6 @@ pipeline {
                 ]
             )
         }
-    }
-}
-triggers {
-        pollSCM('H 10 * * *')  // time is adjustable
-        githubPush()
-    }
-
-    post {
         success {
             echo 'Pipeline succeeded!'
         }
