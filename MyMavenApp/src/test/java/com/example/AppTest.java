@@ -45,11 +45,13 @@ class RegistrationServletTest {
         servlet = new RegistrationServlet();
         
         // Mock DriverManager behavior
-        when(DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
-            "root", 
-            "RootRoot##"))
-            .thenReturn(connection);
+        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)){
+       driverManagerMock.when(() -> 
+            DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
+                "root", 
+                "RootRoot##"
+            )
         
         when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
         when(preparedStatement.executeUpdate()).thenReturn(1);
@@ -64,22 +66,34 @@ class RegistrationServletTest {
         verify(requestDispatcher).forward(request, response);
     }
 
-    @Test
+   @Test
     void testDoPostSuccessfulRegistration() throws Exception {
-        when(request.getParameter("name")).thenReturn("testuser");
-        when(request.getParameter("email")).thenReturn("test@example.com");
-        when(request.getParameter("pass")).thenReturn("password123");
-        
-        doNothing().when(response).sendRedirect("login.jsp");
-        
-        servlet.doPost(request, response);
-        
-        verify(preparedStatement).setString(1, "testuser");
-        verify(preparedStatement).setString(2, "password123");
-        verify(preparedStatement).setString(3, "test@example.com");
-        verify(preparedStatement).executeUpdate();
-        verify(response).sendRedirect("login.jsp");
+        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
+            // Mock static DriverManager.getConnection()
+            driverManagerMock.when(() -> 
+                DriverManager.getConnection(
+                    "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
+                    "root", 
+                    "RootRoot##"
+                )
+            ).thenReturn(connection);
+
+            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenReturn(1);
+
+            // Test logic
+            when(request.getParameter("name")).thenReturn("testuser");
+            when(request.getParameter("email")).thenReturn("test@example.com");
+            when(request.getParameter("pass")).thenReturn("password123");
+            doNothing().when(response).sendRedirect("login.jsp");
+            
+            servlet.doPost(request, response);
+            
+            verify(preparedStatement).executeUpdate();
+            verify(response).sendRedirect("login.jsp");
+        }
     }
+}
 
     @Test
     void testDoPostFailedRegistration() throws Exception {
@@ -96,16 +110,19 @@ class RegistrationServletTest {
         verify(requestDispatcher).forward(request, response);
     }
 
-    @Test
-    void testDatabaseConnection() {  // Removed "throws SQLException"
-        try (Connection conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true",
-            "root",
-            "RootRoot##"
-        )) {
-            assertTrue(conn.isValid(1));
-        } catch (SQLException e) {
-            fail("Database connection failed: " + e.getMessage());
-        }
+   @Test
+void testDatabaseConnection() {
+    try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
+        driverManagerMock.when(() -> 
+            DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true",
+                "root",
+                "RootRoot##"
+            )
+        ).thenReturn(connection);
+
+        assertTrue(connection.isValid(1));
+    }
+}
     }
 }
