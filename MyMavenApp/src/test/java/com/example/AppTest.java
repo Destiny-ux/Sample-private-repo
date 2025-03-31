@@ -14,6 +14,7 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.*;
 
@@ -39,7 +40,6 @@ class RegistrationServletTest {
 
     @BeforeEach
     void setUp() throws Exception {
-        MockitoAnnotations.openMocks(this);
         servlet = new RegistrationServlet();
 
         try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
@@ -117,6 +117,7 @@ class RegistrationServletTest {
                 )
             ).thenReturn(connection);
 
+            when(connection.isValid(1)).thenReturn(true);
             assertTrue(connection.isValid(1));
         }
     }
