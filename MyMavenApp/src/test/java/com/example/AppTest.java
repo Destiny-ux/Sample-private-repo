@@ -104,19 +104,13 @@ class RegistrationServletTest {
     }
 
     @Test
-    void testDoPostDatabaseError() throws Exception {
-        // Setup mock request parameters
-        when(request.getParameter("name")).thenReturn("testuser");
-        when(request.getParameter("email")).thenReturn("test@example.com");
-        when(request.getParameter("pass")).thenReturn("password123");
-        
-        // Simulate database error
-        when(connection.prepareStatement(anyString())).thenThrow(new SQLException("DB error"));
-        when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
-        
-        servlet.doPost(request, response);
-        
-        // Verify error handling
-        verify(requestDispatcher).forward(request, response);
+public void testDatabaseConnection() {
+    try (Connection conn = DriverManager.getConnection(
+        "jdbc:mysql://localhost:3306/your-Falcons?useSSL=false&allowPublicKeyRetrieval=true",
+        "root",
+        "RootRoot##"
+    )) {
+        assertTrue(conn.isValid(1));
     }
+}
 }
