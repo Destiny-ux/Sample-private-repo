@@ -136,17 +136,11 @@ pipeline {
             }
         }
         success {
-            slackSend color: 'good', 
-                     message: "SUCCESS: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
+            echo 'Pipeline succeeded!'
         }
         failure {
-            slackSend color: 'danger',
-                     message: "FAILED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'\n" +
-                             "See ${env.BUILD_URL}"
+            echo 'Pipeline failed!'
         }
-        unstable {
-            slackSend color: 'warning',
-                     message: "UNSTABLE: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]'"
-        }
+      
     }
 }
