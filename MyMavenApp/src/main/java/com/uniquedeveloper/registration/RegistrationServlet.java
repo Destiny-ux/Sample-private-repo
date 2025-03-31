@@ -36,7 +36,7 @@ public class RegistrationServlet extends HttpServlet {
 
         try {
             Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Falcons?useSSL=false", "root", "RootRoot##");
+            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true", "root", "RootRoot##");
             PreparedStatement pst = con.prepareStatement("insert into users (uname, upwd, uemail) VALUES (?, ?, ?)");
             System.out.println("Database connected successfully");
 //
