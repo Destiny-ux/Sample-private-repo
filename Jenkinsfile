@@ -25,6 +25,14 @@ pipeline {
             }
         }
     }
+    stage('SonarQube Analysis') {
+            steps {
+                // matching Jenkins config SonarQube server name
+                withSonarQubeEnv('sonarqube-local') {
+                    sh 'mvn sonar:sonar'
+                }
+            }
+        }
     
     post {
         always {
@@ -39,6 +47,20 @@ pipeline {
                     reportName: 'JaCoCo Report'
                 ]
             )
+        }
+    }
+}
+triggers {
+        pollSCM('H 10 * * *')  // time is adjustable
+        githubPush()
+    }
+
+    post {
+        success {
+            echo 'Pipeline succeeded!'
+        }
+        failure {
+            echo 'Pipeline failed!'
         }
     }
 }
