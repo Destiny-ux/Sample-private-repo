@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
+import java.sql.SQLException;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.anyString;
@@ -107,7 +108,7 @@ class RegistrationServletTest {
     }
 
     @Test
-    void testDatabaseConnection() {
+    void testDatabaseConnection() throws SQLException {
         try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
             driverManagerMock.when(() -> 
                 DriverManager.getConnection(
