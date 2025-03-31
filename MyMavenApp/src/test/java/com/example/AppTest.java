@@ -40,21 +40,8 @@ class RegistrationServletTest {
     private PreparedStatement preparedStatement;
 
     @BeforeEach
-    void setUp() throws Exception {
+    void setUp() {
         servlet = new RegistrationServlet();
-
-        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
-            driverManagerMock.when(() -> 
-                DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
-                    "root", 
-                    "RootRoot##"
-                )
-            ).thenReturn(connection);
-
-            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-            when(preparedStatement.executeUpdate()).thenReturn(1);
-        }
     }
 
     @Test
@@ -68,14 +55,12 @@ class RegistrationServletTest {
 
     @Test
     void testDoPostSuccessfulRegistration() throws Exception {
-        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
-            driverManagerMock.when(() -> 
-                DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
-                    "root", 
-                    "RootRoot##"
-                )
-            ).thenReturn(connection);
+        try (MockedStatic<DriverManager> ignored = Mockito.mockStatic(DriverManager.class)) {
+            when(DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/Falcons?useSSL=false", 
+                "root", 
+                "RootRoot##"
+            )).thenReturn(connection);
 
             when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
             when(preparedStatement.executeUpdate()).thenReturn(1);
@@ -94,29 +79,33 @@ class RegistrationServletTest {
 
     @Test
     void testDoPostFailedRegistration() throws Exception {
-        when(request.getParameter("name")).thenReturn("testuser");
-        when(request.getParameter("email")).thenReturn("test@example.com");
-        when(request.getParameter("pass")).thenReturn("password123");
-        
-        when(preparedStatement.executeUpdate()).thenReturn(0);
-        when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
-        
-        servlet.doPost(request, response);
-        
-        verify(request).setAttribute("status", "failed");
-        verify(requestDispatcher).forward(request, response);
+        try (MockedStatic<DriverManager> ignored = Mockito.mockStatic(DriverManager.class)) {
+            when(DriverManager.getConnection(anyString(), anyString(), anyString()))
+                .thenReturn(connection);
+
+            when(request.getParameter("name")).thenReturn("testuser");
+            when(request.getParameter("email")).thenReturn("test@example.com");
+            when(request.getParameter("pass")).thenReturn("password123");
+            
+            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+            when(preparedStatement.executeUpdate()).thenReturn(0);
+            when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
+            
+            servlet.doPost(request, response);
+            
+            verify(request).setAttribute("status", "failed");
+            verify(requestDispatcher).forward(request, response);
+        }
     }
 
     @Test
     void testDatabaseConnection() throws SQLException {
-        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
-            driverManagerMock.when(() -> 
-                DriverManager.getConnection(
-                    "jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true",
-                    "root",
-                    "RootRoot##"
-                )
-            ).thenReturn(connection);
+        try (MockedStatic<DriverManager> ignored = Mockito.mockStatic(DriverManager.class)) {
+            when(DriverManager.getConnection(
+                "jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true",
+                "root",
+                "RootRoot##"
+            )).thenReturn(connection);
 
             when(connection.isValid(1)).thenReturn(true);
             assertTrue(connection.isValid(1));
