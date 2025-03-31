@@ -104,13 +104,15 @@ class RegistrationServletTest {
     }
 
     @Test
-public void testDatabaseConnection() {
+public void testDatabaseConnection()throws SQLException {
     try (Connection conn = DriverManager.getConnection(
         "jdbc:mysql://localhost:3306/your-Falcons?useSSL=false&allowPublicKeyRetrieval=true",
         "root",
         "RootRoot##"
     )) {
         assertTrue(conn.isValid(1));
+    }catch (SQLException e) {
+        fail("Database connection failed: " + e.getMessage());
     }
 }
 }
