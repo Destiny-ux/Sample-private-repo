@@ -21,6 +21,14 @@ pipeline {
                 always {
                     junit allowEmptyResults: true, testResults: '**/target/surefire-reports/*.xml'
                     jacoco execPattern: '**/target/jacoco.exec'
+                    script {
+                def reportPath = 'target/site/jacoco'
+                if (fileExists(reportPath)) {
+                    echo "JaCoCo reports found at ${reportPath}"
+                } else {
+                    error "JaCoCo reports NOT found at ${reportPath}"
+                }
+            }
                 }
             }
         }
