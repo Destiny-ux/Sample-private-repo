@@ -23,6 +23,9 @@
         <junit.version>5.9.2</junit.version>
         <mockito.version>5.3.1</mockito.version>
         <h2.version>2.2.224</h2.version>
+        <!-- Explicit versions to prevent override -->
+        <mockito-core.version>${mockito.version}</mockito-core.version>
+        <mockito-junit-jupiter.version>${mockito.version}</mockito-junit-jupiter.version>
     </properties>
 
     <dependencies>
@@ -66,17 +69,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Mockito -->
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
+        <!-- Mockito (simplified - mockito-junit-jupiter includes core) -->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.version}</version>
+            <version>${mockito-junit-jupiter.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -93,11 +90,11 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Servlet API -->
+        <!-- Updated to Jakarta Servlet API -->
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>javax.servlet-api</artifactId>
-            <version>4.0.1</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.0.0</version>
             <scope>provided</scope>
         </dependency>
     </dependencies>
@@ -108,21 +105,23 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
+            
+            <!-- Let Spring Boot manage plugin versions where possible -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.10.1</version>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
-                <version>3.1.2</version>
             </plugin>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>3.3.2</version>
             </plugin>
+            
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
