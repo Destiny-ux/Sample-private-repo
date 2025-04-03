@@ -38,10 +38,11 @@ pipeline {
                     target: [
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
+                        includes: '**/*.png',
                         keepAll: true,
-                        reportDir: 'target/site/jacoco',
+                        reportDir: 'reports/',
                         reportFiles: 'index.html',
-                        reportName: 'JaCoCo Report'
+                        reportName: 'HTML Report',
                     ]
                 )
             }
