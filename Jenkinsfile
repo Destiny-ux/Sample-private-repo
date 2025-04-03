@@ -9,7 +9,7 @@ pipeline {
     stages {
         stage('Build') {
             steps {
-                bat 'mvn ./MyMavenApp/pom.xml clean package'
+                bat 'mvn -f ./MyMavenApp/pom.xml clean package'
             }
         }
         
