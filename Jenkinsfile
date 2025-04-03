@@ -15,7 +15,7 @@ pipeline {
         stage('Build') {
             steps {
                 // Force clean repository and update dependencies
-                bat 'mvn clean package 
+                bat 'mvn clean package' 
             }
         }
         
@@ -27,7 +27,7 @@ pipeline {
                 always {
                     junit '**/target/surefire-reports/**/*.xml'
                     jacoco(
-                        execPattern: '**/target/jacoco.exec',
+                        execPattern: '**/target/jacoco.exec'
                        // classPattern: '**/target/classes',
                         //sourcePattern: '**/src/main/java'
                     )
