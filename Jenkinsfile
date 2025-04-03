@@ -40,7 +40,7 @@ pipeline {
                         alwaysLinkToLastBuild: false,
                         includes: '**/*.png',
                         keepAll: true,
-                        reportDir: 'target/site/jacoco',
+                        reportDir: 'C:\Users\User\MyMavenApp\target\site\jacoco',
                         reportFiles: 'index.html',
                         reportName: 'JaCoCo Coverage Report'
                     ]
