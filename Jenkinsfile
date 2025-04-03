@@ -20,6 +20,7 @@ pipeline {
             post {
                 always {
                     junit '**/target/surefire-reports/*.xml'
+                    archiveArtifacts 'target/surefire-reports/**/*'
                     jacoco(
                         execPattern: '**/target/jacoco.exec',
                         classPattern: '**/target/classes',
@@ -41,7 +42,7 @@ pipeline {
     
     post {
         always {
-            archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+           // archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             publishHTML(
                 target: [
                     allowMissing: true,
