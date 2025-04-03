@@ -16,12 +16,22 @@ import javax.servlet.http.HttpServletResponse;
 @WebServlet("/register")
 public class RegistrationServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
+    
+    // For production use
+    protected Connection getConnection() throws SQLException, ClassNotFoundException {
+        Class.forName("com.mysql.cj.jdbc.Driver");
+        return DriverManager.getConnection(
+            "jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true", 
+            "root", 
+            "RootRoot##");
+    }
+    
+    // For testing use
+    protected Connection testConnection;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Forward to the registration form (registration.jsp)
-        RequestDispatcher dispatcher = request.getRequestDispatcher("registration.jsp");
-        dispatcher.forward(request, response);
+        request.getRequestDispatcher("registration.jsp").forward(request, response);
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
@@ -32,37 +42,43 @@ public class RegistrationServlet extends HttpServlet {
         String upwd = request.getParameter("pass");
 
         Connection con = null;
-        RequestDispatcher dispatcher = null;
+        RequestDispatcher dispatcher = request.getRequestDispatcher("registration.jsp");
 
         try {
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            con = DriverManager.getConnection("jdbc:mysql://localhost:3306/Falcons?useSSL=false&allowPublicKeyRetrieval=true", "root", "RootRoot##");
-            PreparedStatement pst = con.prepareStatement("insert into users (uname, upwd, uemail) VALUES (?, ?, ?)");
-            System.out.println("Database connected successfully");
-//
+            con = testConnection != null ? testConnection : getConnection();
+            PreparedStatement pst = con.prepareStatement(
+                "INSERT INTO users(uname, upwd, uemail) VALUES (?, ?, ?)");
+            
             pst.setString(1, uname);
             pst.setString(2, upwd);
             pst.setString(3, uemail);
 
             int rowCount = pst.executeUpdate();
-            dispatcher = request.getRequestDispatcher("registration.jsp");
+            
             if (rowCount > 0) {
                 response.sendRedirect("login.jsp");
-            } else {
-                request.setAttribute("status", "failed");
-                dispatcher = request.getRequestDispatcher("registration.jsp");
-            }
-            dispatcher.forward(request, response);
+                return; // Important to return after redirect
+            } 
+            
+            request.setAttribute("status", "failed");
         } catch (Exception e) {
             e.printStackTrace();
+            request.setAttribute("status", "failed");
         } finally {
-            try {
-                if (con != null) {
+            if (con != null && testConnection == null) { // Only close non-test connections
+                try {
                     con.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
                 }
-            } catch (SQLException e) {
-                e.printStackTrace();
             }
         }
+        
+        dispatcher.forward(request, response);
+    }
+    
+    // For testing purposes only
+    void setTestConnection(Connection connection) {
+        this.testConnection = connection;
     }
 }
