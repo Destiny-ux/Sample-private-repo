@@ -79,11 +79,16 @@
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.3.2</version>
                      <configuration>
-        <!-- Add if you have non-standard test locations -->
-        <includes>
-          <include>**/*Test.java</include>
-        </includes>
-      </configuration>
+          <includes>
+            <include>**/*Test.java</include>
+            <include>**/*Tests.java</include>
+            <include>**/Test*.java</include>
+            <include>**/*TestCase.java</include>
+          </includes>
+          <excludes>
+            <exclude>**/*IT.java</exclude> <!-- Exclude integration tests -->
+          </excludes>
+        </configuration>
             </plugin>
         </plugins>
     </build>
