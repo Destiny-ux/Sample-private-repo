@@ -1,17 +1,21 @@
 pipeline {
     agent any
+    tools {
+        maven 'maven-3.99'  // matching name with Jenkins global tools
+        jdk 'Java-21'       // matching name with Jenkins global tools
+    }
     
     stages {
         stage('Checkout') {
             steps {
-                checkout scm
+                git branch: 'master', url: 'https://github.com/Destiny-ux/Sample-private-repo.git'
             }
         }
         
         stage('Build') {
             steps {
                 // Force clean repository and update dependencies
-                bat 'mvn clean package -U -Dmaven.repo.local=$WORKSPACE/.repository'
+                bat 'mvn clean package 
             }
         }
         
@@ -24,9 +28,17 @@ pipeline {
                     junit '**/target/surefire-reports/**/*.xml'
                     jacoco(
                         execPattern: '**/target/jacoco.exec',
-                        classPattern: '**/target/classes',
-                        sourcePattern: '**/src/main/java'
+                       // classPattern: '**/target/classes',
+                        //sourcePattern: '**/src/main/java'
                     )
+                }
+            }
+        }
+        stage('SonarQube Analysis') {
+            steps {
+                // matching Jenkins config SonarQube server name
+                withSonarQubeEnv('sonarqube') {
+                    sh 'mvn sonar:sonar'
                 }
             }
         }
