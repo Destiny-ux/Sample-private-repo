@@ -10,13 +10,14 @@ pipeline {
         
         stage('Build') {
             steps {
-                bat 'mvn clean package -U'
+                // Force clean repository and update dependencies
+                bat 'mvn clean package -U -Dmaven.repo.local=$WORKSPACE/.repository'
             }
         }
         
         stage('Test') {
             steps {
-                bat 'mvn test -U'
+                bat 'mvn test'
             }
             post {
                 always {
