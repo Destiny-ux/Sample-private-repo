@@ -2,14 +2,21 @@ pipeline {
     agent any
     
     stages {
-        stage('Build') {
+        stage('Checkout') {
             steps {
-                bat 'mvn clean package -U'  // -U forces update of dependencies
+                checkout scm
             }
         }
+        
+        stage('Build') {
+            steps {
+                bat 'mvn clean package -U'
+            }
+        }
+        
         stage('Test') {
             steps {
-                bat 'mvn test -U'  // -U forces update of dependencies
+                bat 'mvn test -U'
             }
             post {
                 always {
@@ -22,26 +29,27 @@ pipeline {
                 }
             }
         }
-        stage('SonarQube Analysis') {
+        
+        stage('Archive') {
             steps {
-                // Your SonarQube steps here
+                archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+                publishHTML(
+                    target: [
+                        allowMissing: false,
+                        alwaysLinkToLastBuild: false,
+                        keepAll: true,
+                        reportDir: 'target/site/jacoco',
+                        reportFiles: 'index.html',
+                        reportName: 'JaCoCo Report'
+                    ]
+                )
             }
         }
     }
     
     post {
         always {
-            archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-            publishHTML(
-                target: [
-                    allowMissing: false,
-                    alwaysLinkToLastBuild: false,
-                    keepAll: true,
-                    reportDir: 'target/site/jacoco',
-                    reportFiles: 'index.html',
-                    reportName: 'JaCoCo Report'
-                ]
-            )
+            cleanWs()
         }
     }
 }
