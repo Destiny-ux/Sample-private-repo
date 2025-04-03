@@ -9,7 +9,6 @@ import org.springframework.mock.web.MockHttpServletResponse;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -25,16 +24,16 @@ public class AppTest {
         // Initialize servlet
         servlet = new RegistrationServlet();
         
-        // Set up H2 in-memory database
+        // Set up H2 in-memory database with MySQL compatibility mode
         testConnection = DriverManager.getConnection(
-            "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", "sa", "");
+            "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1;MODE=MySQL", "sa", "");
         
-        // Create test table structure matching your MySQL schema
+        // Create test table structure matching production
         try (Statement stmt = testConnection.createStatement()) {
-            // First drop table if it exists from previous test
-            stmt.execute("DROP TABLE IF EXISTS users");
-            // Then create fresh table
-            stmt.execute("CREATE TABLE users(uname VARCHAR(255), upwd VARCHAR(255), uemail VARCHAR(255))");
+            stmt.execute("CREATE TABLE IF NOT EXISTS users(" +
+                "uname VARCHAR(255), " +
+                "upwd VARCHAR(255), " +
+                "uemail VARCHAR(255))");
         }
         
         // Inject the test connection
@@ -49,19 +48,9 @@ public class AppTest {
     public void tearDown() throws Exception {
         if (testConnection != null && !testConnection.isClosed()) {
             try {
-                // Check if table exists before trying to drop it
-                try (Statement stmt = testConnection.createStatement();
-                     ResultSet rs = stmt.executeQuery(
-                         "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'USERS'")) {
-                    
-                    if (rs.next()) { // Table exists
-                        stmt.execute("DROP TABLE users");
-                    }
-                }
-            } catch (SQLException e) {
-                System.err.println("Error during teardown: " + e.getMessage());
-            } finally {
                 testConnection.close();
+            } catch (Exception e) {
+                System.err.println("Error closing connection: " + e.getMessage());
             }
         }
     }
@@ -102,10 +91,8 @@ public class AppTest {
         request.addParameter("email", "test@example.com");
         request.addParameter("pass", "password123");
         
-        // Force failure by dropping the table
-        try (Statement stmt = testConnection.createStatement()) {
-            stmt.execute("DROP TABLE users");
-        }
+        // Force failure by closing connection first
+        testConnection.close();
         
         servlet.doPost(request, response);
         
