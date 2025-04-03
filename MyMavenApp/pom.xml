@@ -8,6 +8,7 @@
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
         <version>2.7.18</version>
+        <relativePath/> <!-- lookup parent from repository -->
     </parent>
 
     <groupId>com.uniquedeveloper</groupId>
@@ -20,9 +21,7 @@
         <maven.compiler.source>11</maven.compiler.source>
         <maven.compiler.target>11</maven.compiler.target>
         <junit.version>5.9.2</junit.version>
-        <mockito.version>5.3.1</mockito.version>
-        <h2.version>2.1.214</h2.version>
-        <!-- SonarQube Properties -->
+        <h2.version>2.2.224</h2.version>
         <sonar.coverage.jacoco.xmlReportPaths>${project.basedir}/target/site/jacoco/jacoco.xml</sonar.coverage.jacoco.xmlReportPaths>
         <sonar.language>java</sonar.language>
     </properties>
@@ -71,14 +70,8 @@
         <!-- Mockito -->
         <dependency>
             <groupId>org.mockito</groupId>
-            <artifactId>mockito-core</artifactId>
-            <version>${mockito.version}</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.mockito</groupId>
-            <artifactId>mockito-junit-jupiter</artifactId>
-            <version>${mockito.version}</version>
+            <artifactId>mockito-inline</artifactId>
+            <version>5.2.0</version>
             <scope>test</scope>
         </dependency>
 
@@ -97,7 +90,7 @@
             <scope>test</scope>
         </dependency>
 
-        <!-- Spring Test Utilities (for MockHttpServletRequest/Response) -->
+        <!-- Spring Test Utilities -->
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
@@ -111,7 +104,7 @@
             <artifactId>spring-boot-starter-data-jpa</artifactId>
         </dependency>
 
-        <!-- Servlet API (for compile scope) -->
+        <!-- Servlet API -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>javax.servlet-api</artifactId>
