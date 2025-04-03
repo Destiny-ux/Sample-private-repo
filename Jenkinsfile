@@ -1,64 +1,47 @@
 pipeline {
     agent any
     
-    triggers {
-        pollSCM('H 10 * * *')  // Checks SCM for changes every day at 10AM
-        // githubPush()  // Remove or properly configure webhooks for this
-    }
-    
     stages {
         stage('Build') {
             steps {
-                bat 'mvn -f ./MyMavenApp/pom.xml clean package'
+                bat 'mvn clean package -U'  // -U forces update of dependencies
             }
         }
-        
         stage('Test') {
             steps {
-                bat 'mvn test'
+                bat 'mvn test -U'  // -U forces update of dependencies
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/*.xml'
-                    archiveArtifacts 'target/surefire-reports/**/*'
+                    junit '**/target/surefire-reports/**/*.xml'
                     jacoco(
                         execPattern: '**/target/jacoco.exec',
                         classPattern: '**/target/classes',
-                        sourcePattern: '**/src/main/java',
-                        exclusionPattern: '**/test/**'
+                        sourcePattern: '**/src/main/java'
                     )
                 }
             }
         }
-        
         stage('SonarQube Analysis') {
             steps {
-                withSonarQubeEnv('sonarqube') {
-                    bat 'mvn sonar:sonar'
-                }
+                // Your SonarQube steps here
             }
         }
     }
     
     post {
         always {
-           // archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
+            archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
             publishHTML(
                 target: [
-                    allowMissing: true,
-                    alwaysLinkToLastBuild: true,
+                    allowMissing: false,
+                    alwaysLinkToLastBuild: false,
                     keepAll: true,
                     reportDir: 'target/site/jacoco',
                     reportFiles: 'index.html',
                     reportName: 'JaCoCo Report'
                 ]
             )
-        }
-        success {
-            echo 'Pipeline succeeded!'
-        }
-        failure {
-            echo 'Pipeline failed!'
         }
     }
 }
