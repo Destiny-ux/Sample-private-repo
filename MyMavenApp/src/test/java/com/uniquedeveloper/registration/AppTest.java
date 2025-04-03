@@ -8,6 +8,8 @@ import org.springframework.mock.web.MockHttpServletResponse;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.sql.Statement;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -29,6 +31,9 @@ public class AppTest {
         
         // Create test table structure matching your MySQL schema
         try (Statement stmt = testConnection.createStatement()) {
+            // First drop table if it exists from previous test
+            stmt.execute("DROP TABLE IF EXISTS users");
+            // Then create fresh table
             stmt.execute("CREATE TABLE users(uname VARCHAR(255), upwd VARCHAR(255), uemail VARCHAR(255))");
         }
         
@@ -42,11 +47,22 @@ public class AppTest {
 
     @AfterEach
     public void tearDown() throws Exception {
-        if (testConnection != null) {
-            try (Statement stmt = testConnection.createStatement()) {
-                stmt.execute("DROP TABLE users");
+        if (testConnection != null && !testConnection.isClosed()) {
+            try {
+                // Check if table exists before trying to drop it
+                try (Statement stmt = testConnection.createStatement();
+                     ResultSet rs = stmt.executeQuery(
+                         "SELECT 1 FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_NAME = 'USERS'")) {
+                    
+                    if (rs.next()) { // Table exists
+                        stmt.execute("DROP TABLE users");
+                    }
+                }
+            } catch (SQLException e) {
+                System.err.println("Error during teardown: " + e.getMessage());
+            } finally {
+                testConnection.close();
             }
-            testConnection.close();
         }
     }
 
@@ -69,8 +85,8 @@ public class AppTest {
         assertEquals("login.jsp", response.getRedirectedUrl());
         
         // Verify data was actually inserted
-        try (var stmt = testConnection.createStatement();
-             var rs = stmt.executeQuery("SELECT * FROM users")) {
+        try (Statement stmt = testConnection.createStatement();
+             ResultSet rs = stmt.executeQuery("SELECT * FROM users")) {
             assertTrue(rs.next());
             assertEquals("testuser", rs.getString("uname"));
             assertEquals("test@example.com", rs.getString("uemail"));
