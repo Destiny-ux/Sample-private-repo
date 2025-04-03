@@ -7,6 +7,7 @@ import org.mockito.Mock;
 import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 import org.mockito.junit.jupiter.MockitoExtension;
+
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -53,41 +54,29 @@ public class AppTest {
 
     @Test
     public void testDoPostSuccessfulRegistration() throws Exception {
-        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
-            driverManagerMock.when(() -> DriverManager.getConnection(
-                anyString(), anyString(), anyString()
-            )).thenReturn(connection);
-
-            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-            when(preparedStatement.executeUpdate()).thenReturn(1);
-
-            when(request.getParameter("name")).thenReturn("testuser");
-            when(request.getParameter("email")).thenReturn("test@example.com");
-            when(request.getParameter("pass")).thenReturn("password123");
-            
+        // Setup test data
+        when(request.getParameter("name")).thenReturn("testuser");
+        when(request.getParameter("email")).thenReturn("test@example.com");
+        when(request.getParameter("pass")).thenReturn("password123");
+        
+        // Test using mock database interactions
+        try (MockedStatic<DriverManager> ignored = mockDriverManager()) {
             servlet.doPost(request, response);
-            
             verify(response).sendRedirect("login.jsp");
         }
     }
 
     @Test
     public void testDoPostFailedRegistration() throws Exception {
-        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
-            driverManagerMock.when(() -> DriverManager.getConnection(
-                anyString(), anyString(), anyString()
-            )).thenReturn(connection);
-
-            when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
-            when(preparedStatement.executeUpdate()).thenReturn(0);
-            
-            when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
-            when(request.getParameter("name")).thenReturn("testuser");
-            when(request.getParameter("email")).thenReturn("test@example.com");
-            when(request.getParameter("pass")).thenReturn("password123");
-            
+        // Setup test data
+        when(request.getParameter("name")).thenReturn("testuser");
+        when(request.getParameter("email")).thenReturn("test@example.com");
+        when(request.getParameter("pass")).thenReturn("password123");
+        when(request.getRequestDispatcher("registration.jsp")).thenReturn(requestDispatcher);
+        
+        // Test failed registration scenario
+        try (MockedStatic<DriverManager> ignored = mockDriverManagerForFailure()) {
             servlet.doPost(request, response);
-            
             verify(request).setAttribute("status", "failed");
             verify(requestDispatcher).forward(request, response);
         }
@@ -95,13 +84,35 @@ public class AppTest {
 
     @Test
     public void testDatabaseConnection() throws SQLException {
-        try (MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class)) {
-            driverManagerMock.when(() -> DriverManager.getConnection(
-                anyString(), anyString(), anyString()
-            )).thenReturn(connection);
-
-            when(connection.isValid(1)).thenReturn(true);
+        try (MockedStatic<DriverManager> ignored = mockDriverManager()) {
             assertTrue(connection.isValid(1));
         }
+    }
+
+    // Helper method to mock successful database operations
+    private MockedStatic<DriverManager> mockDriverManager() throws SQLException {
+        MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class);
+        driverManagerMock.when(() -> DriverManager.getConnection(
+            anyString(), anyString(), anyString()
+        )).thenReturn(connection);
+        
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeUpdate()).thenReturn(1);
+        when(connection.isValid(1)).thenReturn(true);
+        
+        return driverManagerMock;
+    }
+
+    // Helper method to mock failed database operations
+    private MockedStatic<DriverManager> mockDriverManagerForFailure() throws SQLException {
+        MockedStatic<DriverManager> driverManagerMock = Mockito.mockStatic(DriverManager.class);
+        driverManagerMock.when(() -> DriverManager.getConnection(
+            anyString(), anyString(), anyString()
+        )).thenReturn(connection);
+        
+        when(connection.prepareStatement(anyString())).thenReturn(preparedStatement);
+        when(preparedStatement.executeUpdate()).thenReturn(0);
+        
+        return driverManagerMock;
     }
 }
