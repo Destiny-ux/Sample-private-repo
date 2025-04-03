@@ -34,7 +34,7 @@ pipeline {
         stage('Archive') {
             steps {
                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-                publishHTML(
+                publishHTML([
                     target: [
                         allowMissing: false,
                         alwaysLinkToLastBuild: false,
@@ -44,7 +44,7 @@ pipeline {
                         reportFiles: 'C:/Users/User/MyMavenApp/target/site/jacoco/index.html'
                         reportName: 'HTML Report',
                     ]
-                )
+                ])
             }
         }
     }
