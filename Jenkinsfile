@@ -40,9 +40,9 @@ pipeline {
                         alwaysLinkToLastBuild: false,
                         includes: '**/*.png',
                         keepAll: true,
-                        reportDir: 'reports/',
-                        reportFiles: 'C:/Users/User/MyMavenApp/target/site/jacoco/index.html'
-                        reportName: 'HTML Report',
+                        reportDir: 'C:/Users/User/MyMavenApp/target/site/jacoco/index.html',
+                        reportFiles: 'index.html',
+                        reportName: 'HTML Report'
                     ]
                 ])
             }
