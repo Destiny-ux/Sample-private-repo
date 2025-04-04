@@ -43,7 +43,7 @@ pipeline {
             }
         }
         
-        stage('Archive') {
+        stage('Report') {
             steps {
                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
                 publishHTML([
