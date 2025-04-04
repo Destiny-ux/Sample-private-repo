@@ -62,9 +62,12 @@ pipeline {
     }
     
     post {
-        always {
-        bat 'icacls "C:/Users/User/MyMavenApp/target/site/jacoco" /grant Everyone:(OI)(CI)F /T'
+    always {
+        bat '''
+            icacls "C:\\ProgramData\\Jenkins\\.jenkins\\jobs\\MyMavenApp\\builds\\${BUILD_NUMBER}\\htmlreports" /grant "Everyone:(OI)(CI)F" /T
+        '''
     }
+}
         success {
             echo 'Pipeline succeeded!'
         }
