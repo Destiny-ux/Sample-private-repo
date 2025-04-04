@@ -140,10 +140,11 @@
                     <execution>
                         <goals>
                             <goal>prepare-agent</goal>
+                                 <id>report</id>
                         </goals>
                     </execution>
                     <execution>
-                        <id>report</id>
+                        
                         <phase>test</phase>
                         <goals>
                             <goal>report</goal>
