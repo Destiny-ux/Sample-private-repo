@@ -131,6 +131,7 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
             </plugin>
+                 </pluginManagement>
             
             <plugin>
     <groupId>org.jacoco</groupId>
@@ -152,6 +153,6 @@
         </execution>
     </executions>
 </plugin>
-             </pluginManagement>
+             
     </build>
 </project>
