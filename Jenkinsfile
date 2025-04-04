@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-        maven 'maven-3.99'  // Must match Jenkins global tool name
-        jdk 'Java-21'       // Must match Jenkins global tool name
+        maven 'maven-3.99'
+        jdk 'Java-21'
     }
     
     stages {
@@ -10,18 +10,20 @@ pipeline {
             steps {
                 git branch: 'master', 
                 url: 'https://github.com/Destiny-ux/Sample-private-repo.git'
-                // Removed invalid credentialsId since it wasn't properly configured
             }
         }
         
         stage('Build & Test') {
             steps {
-                // Force JaCoCo execution and report generation
-                bat 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent verify'
+                // 1. Force JaCoCo execution
+                bat 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent package'
+                
+                // 2. Explicitly generate JaCoCo reports
+                bat 'mvn org.jacoco:jacoco-maven-plugin:report'
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/**/*.xml'  // Archive JUnit results
+                    junit '**/target/surefire-reports/**/*.xml'
                     jacoco(
                         execPattern: '**/target/jacoco.exec',
                         classPattern: '**/target/classes',
@@ -48,12 +50,12 @@ pipeline {
                             target: [
                                 reportDir: 'target/site/jacoco',
                                 reportFiles: 'index.html',
-                                reportName: 'index.html',
+                                reportName: 'JaCoCo Coverage Report',
                                 keepAll: true
                             ]
                         ])
                     } else {
-                        echo "Warning: JaCoCo HTML report not found!"
+                        echo "Warning: No tests found - JaCoCo report not generated."
                     }
                 }
             }
@@ -63,8 +65,8 @@ pipeline {
     post {
         always {
             bat '''
-                echo "Checking for JaCoCo report..."
-                dir /s "target\\site\\jacoco" || echo "No JaCoCo report generated."
+                echo "Build completed with status: ${currentBuild.result}"
+                dir /s "target\\site\\jacoco" 2>nul || echo "No JaCoCo report available."
             '''
         }
         success {
