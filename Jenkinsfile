@@ -9,8 +9,8 @@ pipeline {
         stage('Checkout') {
             steps {
                 git branch: 'master', 
-                url: 'https://github.com/Destiny-ux/Sample-private-repo.git',
-               
+                url: 'https://github.com/Destiny-ux/Sample-private-repo.git'
+                // Removed invalid credentialsId since it wasn't properly configured
             }
         }
         
@@ -21,9 +21,7 @@ pipeline {
             }
             post {
                 always {
-                    junit '**/target/surefire-reports/**/*.xml'  // Archive JUnit results (if any)
-                    
-                    // Process JaCoCo coverage (even if tests fail)
+                    junit '**/target/surefire-reports/**/*.xml'  // Archive JUnit results
                     jacoco(
                         execPattern: '**/target/jacoco.exec',
                         classPattern: '**/target/classes',
@@ -36,7 +34,6 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
-                    // Explicitly point to JaCoCo XML report
                     bat 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
                 }
             }
@@ -44,10 +41,7 @@ pipeline {
         
         stage('Report') {
             steps {
-                // Archive the WAR file (optional)
                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
-                
-                // Publish JaCoCo HTML report (only if it exists)
                 script {
                     if (fileExists('target/site/jacoco/index.html')) {
                         publishHTML([
@@ -68,7 +62,6 @@ pipeline {
     
     post {
         always {
-            // Debug: Verify if the JaCoCo report exists
             bat '''
                 echo "Checking for JaCoCo report..."
                 dir /s "target\\site\\jacoco" || echo "No JaCoCo report generated."
