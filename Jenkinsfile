@@ -1,8 +1,8 @@
 pipeline {
     agent any
     tools {
-        maven 'maven-3.99'  // Ensure this matches your Jenkins global tool name
-        jdk 'Java-21'       // Ensure this matches your Jenkins global tool name
+        maven 'maven-3.99'  // Must match Jenkins global tool name
+        jdk 'Java-21'       // Must match Jenkins global tool name
     }
     
     stages {
@@ -10,21 +10,20 @@ pipeline {
             steps {
                 git branch: 'master', 
                 url: 'https://github.com/Destiny-ux/Sample-private-repo.git',
-                credentialsId: 'your-github-credentials-id'  // Add if your repo is private
+               
             }
         }
         
         stage('Build & Test') {
             steps {
-                // Runs unit tests + generates JaCoCo reports
-                bat 'mvn clean verify'  
+                // Force JaCoCo execution and report generation
+                bat 'mvn clean org.jacoco:jacoco-maven-plugin:prepare-agent verify'
             }
             post {
                 always {
-                    // Archive JUnit test results
-                    junit '**/target/surefire-reports/**/*.xml'
+                    junit '**/target/surefire-reports/**/*.xml'  // Archive JUnit results (if any)
                     
-                    // Process JaCoCo coverage
+                    // Process JaCoCo coverage (even if tests fail)
                     jacoco(
                         execPattern: '**/target/jacoco.exec',
                         classPattern: '**/target/classes',
@@ -37,6 +36,7 @@ pipeline {
         stage('SonarQube Analysis') {
             steps {
                 withSonarQubeEnv('sonarqube') {
+                    // Explicitly point to JaCoCo XML report
                     bat 'mvn sonar:sonar -Dsonar.coverage.jacoco.xmlReportPaths=target/site/jacoco/jacoco.xml'
                 }
             }
@@ -44,31 +44,34 @@ pipeline {
         
         stage('Report') {
             steps {
-                // Archive the WAR file
+                // Archive the WAR file (optional)
                 archiveArtifacts artifacts: '**/target/*.war', fingerprint: true
                 
-                // Publish JaCoCo HTML report (using RELATIVE path)
-                publishHTML([
-                    target: [
-                        allowMissing: false,
-                        reportDir: 'target/site/jacoco',  // Relative to workspace
-                        reportFiles: 'index.html',
-                        reportName: 'JaCoCo Coverage Report',
-                        keepAll: true
-                    ]
-                ])
+                // Publish JaCoCo HTML report (only if it exists)
+                script {
+                    if (fileExists('target/site/jacoco/index.html')) {
+                        publishHTML([
+                            target: [
+                                reportDir: 'target/site/jacoco',
+                                reportFiles: 'index.html',
+                                reportName: 'JaCoCo Coverage Report',
+                                keepAll: true
+                            ]
+                        ])
+                    } else {
+                        echo "Warning: JaCoCo HTML report not found!"
+                    }
+                }
             }
         }
     }
     
     post {
         always {
-            // Debug: List files to verify the report exists
-            bat 'dir /s target\\site\\jacoco || echo "No JaCoCo report generated"'
-            
-            // Fix permissions (optional, only if Jenkins still has issues)
+            // Debug: Verify if the JaCoCo report exists
             bat '''
-                icacls "C:\\ProgramData\\Jenkins\\jobs\\MyMavenApp\\builds\\%BUILD_NUMBER%\\htmlreports" /grant "Everyone:(OI)(CI)F" /T
+                echo "Checking for JaCoCo report..."
+                dir /s "target\\site\\jacoco" || echo "No JaCoCo report generated."
             '''
         }
         success {
