@@ -1,0 +1,30 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Python: YOLO Hue Analysis (Default)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "C:\\Users\\User\\Downloads\\1080P60 fps.mp4",
+                "--smooth", "5"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        },
+        {
+            "name": "Python: YOLO Hue Analysis (Custom Model)",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "${file}",
+            "args": [
+                "C:\\Users\\User\\Downloads\\1080P60 fps.mp4",
+                "--smooth", "5",
+                "--model", "yolov8s.pt"
+            ],
+            "console": "integratedTerminal",
+            "justMyCode": true
+        }
+    ]
+}
